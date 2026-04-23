@@ -201,8 +201,7 @@ Only use this tool against systems you own or have explicit written permission t
 
 ## Author
 
-**Anmol Mahajan** — B.Tech CSE, PCTE Institute of Engineering & Technology, Ludhiana  
-Roll No: 2329287
+**Anmol Mahajan** 
 
 ---
 
